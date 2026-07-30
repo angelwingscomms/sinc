@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { from_event, type act } from '$lib/keys.svelte';
-	import { p, ui, undo, redo, add_marker } from '$lib/project.svelte';
+	import { p, ui, commit, undo, redo, add_marker } from '$lib/project.svelte';
+	import { probe } from '$lib/media';
 	import Settings from '$lib/ui/settings.svelte';
+	import Library from '$lib/ui/library.svelte';
 	import { tc } from '$lib/time';
 	import Viewport from '$lib/ui/viewport.svelte';
 	import Transport from '$lib/ui/transport.svelte';
@@ -10,6 +12,16 @@
 
 	let show_settings = $state(false);
 	let vp = $state<Viewport | undefined>();
+
+	async function handle_import(e: Event) {
+		const target = e.currentTarget as HTMLInputElement;
+		if (!target.files) return;
+		for (const f of target.files) {
+			commit();
+			p.r.push(await probe(f));
+		}
+		target.value = '';
+	}
 
 	function act_do(a: act, shift = false) {
 		switch (a) {
@@ -94,6 +106,17 @@
 		<span class="font-mono text-sm tracking-widest text-beat">sinc</span>
 		<span class="font-mono text-xs text-dim">{p.w}×{p.h} · {p.f}fps</span>
 		<div class="flex-1"></div>
+		<label
+			class="cursor-pointer rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim hover:text-ink"
+			>import
+			<input
+				type="file"
+				multiple
+				accept="video/*,audio/*,image/*"
+				class="hidden"
+				onchange={handle_import}
+			/></label
+		>
 		<button
 			class="rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim"
 			onclick={() => (show_settings = true)}>keys</button
@@ -102,7 +125,7 @@
 	</header>
 
 	<main class="grid min-h-0 grid-cols-[15rem_1fr] gap-px bg-line">
-		<aside data-r="library" class="min-h-0 overflow-y-auto bg-panel p-3">library</aside>
+		<aside data-r="library" class="min-h-0 overflow-y-auto bg-panel p-3"><Library /></aside>
 		<section data-r="stage" class="grid min-h-0 grid-rows-[1fr_auto] gap-px bg-line">
 			<div class="min-h-0 bg-bg">
 				{#if ui.mode === 'c'}

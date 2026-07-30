@@ -116,6 +116,14 @@ export function del_item(iid: string) {
 	if (ui.sel === iid) ui.sel = '';
 }
 
+export function del_clip(cid: string) {
+	const i = p.c.findIndex((c) => c.i === cid);
+	if (i < 0) return;
+	commit();
+	p.c.splice(i, 1);
+	p.x = p.x.filter((x) => x.c !== cid);
+}
+
 export function add_track(k: 'v' | 'a') {
 	commit();
 	const n = k + String(p.t.filter((t) => t.k === k).length + 1);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	add_marker,
+	del_clip,
 	del_item,
 	item_len,
 	load_proj,
@@ -106,6 +107,19 @@ describe('project store', () => {
 		v2.h = 1;
 		const t = top_at(50);
 		expect(t?.i).toBe('x1');
+	});
+
+	it('del_clip removes clip and its items; undo restores both', () => {
+		load_proj(structuredClone(initial()));
+		place('c1', 'v1', 10);
+		expect(p.c.length).toBe(1);
+		expect(p.x.length).toBe(1);
+		del_clip('c1');
+		expect(p.c.length).toBe(0);
+		expect(p.x.length).toBe(0);
+		undo();
+		expect(p.c.length).toBe(1);
+		expect(p.x.length).toBe(1);
 	});
 
 	it('top_at: frame outside both returns undefined', () => {

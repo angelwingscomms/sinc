@@ -1,5 +1,5 @@
 import { ALL_FORMATS, BlobSource, Input, VideoSampleSink } from 'mediabunny';
-import { p, id } from './project.svelte';
+import { p, id, commit } from './project.svelte';
 import { clean_fps } from './time';
 import type { src } from './types';
 
@@ -95,6 +95,34 @@ export function peaks(buf: AudioBuffer, n: number) {
 		out[i * 2 + 1] = hi;
 	}
 	return out;
+}
+
+export function del_src(sid: string) {
+	const cids = p.c.filter((c) => c.s === sid).map((c) => c.i);
+	for (const cid of cids) p.x = p.x.filter((x) => x.c !== cid);
+	p.c = p.c.filter((c) => c.s !== sid);
+	const idx = p.r.findIndex((r) => r.i === sid);
+	if (idx < 0) return;
+	commit();
+	p.r.splice(idx, 1);
+	const el = els.get(sid);
+	if (el) {
+		URL.revokeObjectURL(el.src);
+		els.delete(sid);
+	}
+	bmps.get(sid)?.close();
+	bmps.delete(sid);
+	bufs.delete(sid);
+	inputs.delete(sid);
+	sinks.delete(sid);
+	files.delete(sid);
+	// also drop cached thumbnails for this src
+	for (const k of bmps.keys()) {
+		if (k.startsWith(sid + ':')) {
+			bmps.get(k)?.close();
+			bmps.delete(k);
+		}
+	}
 }
 
 export async function rehydrate(r: src, file: File) {
