@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { from_event, type act } from '$lib/keys.svelte';
-	import { p, ui, undo, redo } from '$lib/project.svelte';
+	import { p, ui, undo, redo, add_marker } from '$lib/project.svelte';
 	import Settings from '$lib/ui/settings.svelte';
 	import { tc } from '$lib/time';
 	import Viewport from '$lib/ui/viewport.svelte';
 	import Transport from '$lib/ui/transport.svelte';
+	import MarkerRail from '$lib/ui/marker_rail.svelte';
 
 	let show_settings = $state(false);
 	let vp: Viewport;
@@ -16,6 +17,9 @@
 				break;
 			case 'redo':
 				redo();
+				break;
+			case 'mark':
+				add_marker(ui.pf);
 				break;
 			case 'snap':
 				ui.snap = ui.snap ? 0 : 1;
@@ -98,7 +102,7 @@
 		</section>
 	</main>
 
-	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"></section>
+	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"><MarkerRail /></section>
 </div>
 
 <Settings show={show_settings} onclose={() => (show_settings = false)} />
