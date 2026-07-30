@@ -1,13 +1,44 @@
 <script lang="ts">
-	import { p, ui } from '$lib/project.svelte';
+	import { from_event, type act } from '$lib/keys.svelte';
+	import { p, ui, undo, redo } from '$lib/project.svelte';
+	import Settings from '$lib/ui/settings.svelte';
 	import { tc } from '$lib/time';
+
+	let show_settings = $state(false);
+
+	function act_do(a: act) {
+		switch (a) {
+			case 'undo':
+				undo();
+				break;
+			case 'redo':
+				redo();
+				break;
+			case 'snap':
+				ui.snap = ui.snap ? 0 : 1;
+				break;
+		}
+	}
+
+	function handle(e: KeyboardEvent) {
+		const a = from_event(e);
+		if (!a) return;
+		e.preventDefault();
+		act_do(a);
+	}
 </script>
+
+<svelte:window onkeydown={handle} />
 
 <div class="grid h-full grid-rows-[auto_1fr_auto] gap-px bg-line">
 	<header data-r="topbar" class="flex items-center gap-3 bg-panel px-3 py-2">
 		<span class="font-mono text-sm tracking-widest text-beat">sinc</span>
 		<span class="font-mono text-xs text-dim">{p.w}×{p.h} · {p.f}fps</span>
 		<div class="flex-1"></div>
+		<button
+			class="rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim"
+			onclick={() => (show_settings = true)}>keys</button
+		>
 		<span class="font-mono text-sm tabular-nums">{tc(ui.pf, p.f)}</span>
 	</header>
 
@@ -21,3 +52,5 @@
 
 	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"></section>
 </div>
+
+<Settings show={show_settings} onclose={() => (show_settings = false)} />
