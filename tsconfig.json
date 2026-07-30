@@ -1,6 +1,10 @@
 {
 	"extends": "$app/tsconfig",
 	"compilerOptions": {
+		"paths": {
+			"$lib": ["./src/lib"],
+			"$lib/*": ["./src/lib/*"]
+		},
 		"rewriteRelativeImportExtensions": true,
 		"allowJs": true,
 		"checkJs": true,

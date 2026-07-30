@@ -3,8 +3,14 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			$lib: fileURLToPath(new URL('src/lib', import.meta.url))
+		}
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit({
