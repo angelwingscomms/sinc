@@ -3,8 +3,11 @@
 	import { p, ui, undo, redo } from '$lib/project.svelte';
 	import Settings from '$lib/ui/settings.svelte';
 	import { tc } from '$lib/time';
+	import Viewport from '$lib/ui/viewport.svelte';
+	import Transport from '$lib/ui/transport.svelte';
 
 	let show_settings = $state(false);
+	let vp: Viewport;
 
 	function act_do(a: act) {
 		switch (a) {
@@ -16,6 +19,47 @@
 				break;
 			case 'snap':
 				ui.snap = ui.snap ? 0 : 1;
+				break;
+			case 'play':
+				if (ui.playing) vp.stop();
+				else vp.play();
+				break;
+			case 'prev':
+				vp.seek(Math.max(0, ui.pf - 1));
+				break;
+			case 'next':
+				vp.seek(ui.pf + 1);
+				break;
+		}
+	}
+
+	function transport_act(a: string) {
+		switch (a) {
+			case 'play':
+				act_do('play');
+				break;
+			case 'prev':
+				act_do('prev');
+				break;
+			case 'next':
+				act_do('next');
+				break;
+			case 'start':
+				vp.seek(0);
+				break;
+			case 'end':
+				vp.seek(
+					Math.max(
+						0,
+						p.x.reduce((n, x) => Math.max(n, x.p + x.l), 0)
+					)
+				);
+				break;
+			case 'mark':
+				act_do('mark');
+				break;
+			case 'snap':
+				act_do('snap');
 				break;
 		}
 	}
@@ -45,8 +89,12 @@
 	<main class="grid min-h-0 grid-cols-[15rem_1fr] gap-px bg-line">
 		<aside data-r="library" class="min-h-0 overflow-y-auto bg-panel p-3">library</aside>
 		<section data-r="stage" class="grid min-h-0 grid-rows-[1fr_auto] gap-px bg-line">
-			<div class="min-h-0 bg-bg"></div>
-			<div class="bg-panel px-3 py-2"></div>
+			<div class="min-h-0 bg-bg">
+				<Viewport bind:this={vp} />
+			</div>
+			<div class="bg-panel px-3 py-2">
+				<Transport onact={transport_act} />
+			</div>
 		</section>
 	</main>
 
