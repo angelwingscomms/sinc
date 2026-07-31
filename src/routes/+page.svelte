@@ -10,6 +10,7 @@
 	import Viewport from '$lib/ui/viewport.svelte';
 	import Transport from '$lib/ui/transport.svelte';
 	import ClipMaker from '$lib/ui/clip_maker.svelte';
+	import RenderBar from '$lib/ui/render_bar.svelte';
 
 	let show_settings = $state(false);
 	let vp = $state<Viewport | undefined>();
@@ -150,6 +151,7 @@
 		<button class="rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim" onclick={new_proj}
 			>new</button
 		>
+		<RenderBar />
 		<label
 			class="cursor-pointer rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim hover:text-ink"
 			>import
