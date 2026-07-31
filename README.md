@@ -1,42 +1,37 @@
-# sv
+# sinc
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+beat-sync video editor. behaves like a hardware sampler — near-black chassis, monospace numerics, one magenta pulse.
 
-## Creating a project
+import media, tap **b** on the beat, press **c** to cut. drag clips on the timeline. hit render, download an mp4.
 
-If you're seeing this, you've probably already done this step. Congrats!
+everything stays in your browser — no uploads, no servers, no accounts.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## keys
 
-To recreate this project with the same configuration:
+| key                 | action                         |
+| ------------------- | ------------------------------ |
+| `space`             | play / stop                    |
+| `b`                 | mark beat at playhead          |
+| `c`                 | make clip from selected source |
+| `s`                 | set clip in                    |
+| `e`                 | set clip out                   |
+| `a`                 | add clip (in clip mode)        |
+| `←` / `→`           | step frame                     |
+| `shift` + `←` / `→` | step 10 frames                 |
+| `n`                 | toggle snap                    |
+| `z`                 | undo                           |
+| `y`                 | redo                           |
+| `delete`            | delete selected item           |
+| `esc`               | exit clip mode                 |
 
-```sh
-# recreate this project
-pnpm dlx sv@0.16.6 create --template minimal --types ts --add prettier eslint playwright vitest="usages:unit,component" tailwindcss="plugins:none" sveltekit-adapter="adapter:cloudflare+cfTarget:workers" experimental="versions:kit+features:async,remoteFunctions,explicitEnvironmentVariables,handleRenderingErrors,forkPreloads" --no-download-check --install pnpm sinc
-```
+## requirements
 
-## Developing
+WebCodecs — Chrome, Edge, or Safari 17+. Firefox works for editing but may not support video encoding; if it can't, the render step shows a clear message.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+## build
 
 ```sh
-npm run build
+pnpm install
+pnpm run build
+pnpm dlx wrangler deploy
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.

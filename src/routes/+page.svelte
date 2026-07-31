@@ -155,6 +155,7 @@
 		<label
 			class="cursor-pointer rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim hover:text-ink"
 			>import
+			<kbd class="ml-1 rounded bg-bg/30 px-1 text-[10px]">i</kbd>
 			<input
 				type="file"
 				multiple
@@ -170,12 +171,21 @@
 		<span class="font-mono text-sm tabular-nums">{tc(ui.pf, p.f)}</span>
 	</header>
 
-	<main class="grid min-h-0 grid-cols-[15rem_1fr] gap-px bg-line">
-		<aside data-r="library" class="min-h-0 overflow-y-auto bg-panel p-3"><Library /></aside>
+	<main class="grid min-h-0 gap-px bg-line max-lg:grid-cols-1 lg:grid-cols-[15rem_1fr]">
+		<aside data-r="library" class="min-h-0 overflow-y-auto bg-panel p-3 max-lg:max-h-48">
+			<Library />
+		</aside>
 		<section data-r="stage" class="grid min-h-0 grid-rows-[1fr_auto] gap-px bg-line">
 			<div class="min-h-0 bg-bg">
 				{#if ui.mode === 'c'}
 					<ClipMaker />
+				{:else if p.r.length === 0}
+					<div class="flex h-full items-center justify-center font-mono text-xs text-dim">
+						<div class="flex flex-col gap-1 text-center">
+							<span>import media · <span class="text-ink">b</span> on the beat</span>
+							<span>press <span class="text-ink">c</span> to cut</span>
+						</div>
+					</div>
 				{:else}
 					<Viewport bind:this={vp} />
 				{/if}
@@ -186,7 +196,9 @@
 		</section>
 	</main>
 
-	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"><Timeline /></section>
+	<section data-r="timeline" class="overflow-hidden bg-panel max-lg:h-56 lg:h-80">
+		<Timeline />
+	</section>
 </div>
 
 <Settings show={show_settings} onclose={() => (show_settings = false)} />

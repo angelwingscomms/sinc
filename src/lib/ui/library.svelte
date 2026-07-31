@@ -85,51 +85,60 @@
 	class:ring-2={drag}
 	class:ring-sel={drag}
 >
-	<div class="flex items-center justify-between">
-		<span class="font-mono text-[11px] text-dim uppercase">sources</span>
-	</div>
-
-	{#each p.r as r (r.i)}
+	{#if p.r.length === 0}
 		<div
-			class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 font-mono text-xs"
-			class:ring-1={ui.src_sel === r.i}
-			class:ring-sel={ui.src_sel === r.i}
-			role="button"
-			tabindex="0"
-			onclick={() => select_src(r.i)}
-			ondblclick={() => make_clip(r.i)}
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') select_src(r.i);
-			}}
+			class="flex flex-1 items-center justify-center rounded border-2 border-dashed border-line p-6 text-center font-mono text-xs text-dim"
+			class:border-sel={drag}
 		>
-			<span class="w-6 text-center text-dim">{r.k}</span>
-			<span class="flex-1 truncate">{r.n}</span>
-			<span class="text-dim">{r.k === 'p' ? '' : tc(r.d, r.f)}</span>
-			<button
-				type="button"
-				class="text-dim hover:text-ink"
-				onclick={(e) => {
-					e.stopPropagation();
-					del_src(r.i);
-				}}>×</button
-			>
+			drop video, audio or images
 		</div>
-	{/each}
+	{:else}
+		<div class="flex items-center justify-between">
+			<span class="font-mono text-[11px] text-dim uppercase">sources</span>
+		</div>
 
-	<span class="mt-2 font-mono text-[11px] text-dim uppercase">clips</span>
-
-	<div class="grid grid-cols-2 gap-2">
-		{#each p.c as c (c.i)}
-			{@const r = src_of(c)}
-			{@const len = conv_fr(c.b - c.a + 1, r?.f ?? p.f, p.f)}
-			<button class="overflow-hidden rounded bg-panel2 text-left" onclick={() => drop(c)}>
-				{#if r?.k === 'a'}
-					<canvas use:peaks_act={c} class="h-12 w-full"></canvas>
-				{:else}
-					<canvas use:thumb_act={c} class="aspect-video w-full bg-panel2 object-cover"></canvas>
-				{/if}
-				<div class="px-2 py-1 font-mono text-[10px] text-dim">{len}f · {tc(len, p.f)}</div>
-			</button>
+		{#each p.r as r (r.i)}
+			<div
+				class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 font-mono text-xs"
+				class:ring-1={ui.src_sel === r.i}
+				class:ring-sel={ui.src_sel === r.i}
+				role="button"
+				tabindex="0"
+				onclick={() => select_src(r.i)}
+				ondblclick={() => make_clip(r.i)}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') select_src(r.i);
+				}}
+			>
+				<span class="w-6 text-center text-dim">{r.k}</span>
+				<span class="flex-1 truncate">{r.n}</span>
+				<span class="text-dim">{r.k === 'p' ? '' : tc(r.d, r.f)}</span>
+				<button
+					type="button"
+					class="text-dim hover:text-ink"
+					onclick={(e) => {
+						e.stopPropagation();
+						del_src(r.i);
+					}}>×</button
+				>
+			</div>
 		{/each}
-	</div>
+
+		<span class="mt-2 font-mono text-[11px] text-dim uppercase">clips</span>
+
+		<div class="grid grid-cols-2 gap-2">
+			{#each p.c as c (c.i)}
+				{@const r = src_of(c)}
+				{@const len = conv_fr(c.b - c.a + 1, r?.f ?? p.f, p.f)}
+				<button class="overflow-hidden rounded bg-panel2 text-left" onclick={() => drop(c)}>
+					{#if r?.k === 'a'}
+						<canvas use:peaks_act={c} class="h-12 w-full"></canvas>
+					{:else}
+						<canvas use:thumb_act={c} class="aspect-video w-full bg-panel2 object-cover"></canvas>
+					{/if}
+					<div class="px-2 py-1 font-mono text-[10px] text-dim">{len}f · {tc(len, p.f)}</div>
+				</button>
+			{/each}
+		</div>
+	{/if}
 </div>
