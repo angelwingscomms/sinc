@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { from_event, type act } from '$lib/keys.svelte';
-	import { p, ui, commit, undo, redo, add_marker } from '$lib/project.svelte';
+	import { p, ui, commit, undo, redo, add_marker, del_item } from '$lib/project.svelte';
 	import { probe } from '$lib/media';
 	import Settings from '$lib/ui/settings.svelte';
 	import Library from '$lib/ui/library.svelte';
+	import Timeline from '$lib/ui/timeline.svelte';
 	import { tc } from '$lib/time';
 	import Viewport from '$lib/ui/viewport.svelte';
 	import Transport from '$lib/ui/transport.svelte';
-	import MarkerRail from '$lib/ui/marker_rail.svelte';
 	import ClipMaker from '$lib/ui/clip_maker.svelte';
 
 	let show_settings = $state(false);
@@ -53,6 +53,9 @@
 			case 'clip':
 				if (!ui.src_sel) return;
 				ui.mode = 'c';
+				break;
+			case 'del':
+				if (ui.sel) del_item(ui.sel);
 				break;
 		}
 	}
@@ -140,7 +143,7 @@
 		</section>
 	</main>
 
-	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"><MarkerRail /></section>
+	<section data-r="timeline" class="h-80 overflow-hidden bg-panel"><Timeline /></section>
 </div>
 
 <Settings show={show_settings} onclose={() => (show_settings = false)} />
