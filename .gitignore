@@ -25,3 +25,5 @@ vite.config.ts.timestamp-*
 test-results
 svc/.venv
 __pycache__/
+.pytest_cache/
+*.egg-info/

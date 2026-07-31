@@ -40,6 +40,11 @@ pip install requests numpy
 MS_URL=$PUBLIC_MS_URL pytest test_transcribe.py
 ```
 
+The test posts a synthesized full-mix song (chords + bass + drums at 120 BPM)
+and asserts at least one instrument's onsets align with the beat grid
+(±60ms). MuScriptor ignores sterile clicks and bare tones, so the fixture is
+musical — a real drum machine pattern with pitch content.
+
 ## Cost
 
 The container runs only while a request is in flight plus a 120s

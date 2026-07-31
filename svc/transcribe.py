@@ -60,8 +60,8 @@ def decode(data: bytes) -> tuple[torch.Tensor, int]:
 async def transcribe(request: Request):
     data = await request.body()
     wav, sr = decode(data)
-    onsets: dict[str, list[float]] = {}
+    onsets: dict[str, set[float]] = {}
     for ev in get_model().transcribe((wav, sr)):
         if isinstance(ev, NoteStartEvent):
-            onsets.setdefault(ev.instrument, []).append(round(ev.start_time, 4))
+            onsets.setdefault(ev.instrument, set()).add(round(ev.start_time, 3))
     return {"t": [{"n": n, "o": sorted(o)} for n, o in onsets.items()]}
