@@ -1,4 +1,4 @@
-import { conv_fr } from './time';
+import { conv_fr, snap } from './time';
 import type { clip, item, proj } from './types';
 
 export const id = () => Math.random().toString(36).slice(2, 10);
@@ -27,7 +27,8 @@ export const ui = $state({
 	src_sel: '',
 	zoom: 4,
 	scroll: 0,
-	snap: 1 as 0 | 1
+	snap: 1 as 0 | 1,
+	hid: {} as Record<string, 1>
 });
 
 let past: string[] = [];
@@ -82,6 +83,17 @@ export function del_marker(f: number, g = '') {
 	if (i < 0) return;
 	commit();
 	p.m.splice(i, 1);
+}
+
+export function snap_group(g: string) {
+	const marks = p.m.filter((m) => m.g === g).map((m) => m.p);
+	if (!marks.length) return;
+	commit();
+	for (const x of p.x) {
+		const t = track_of(x);
+		if (!t || t.k !== 'v') continue;
+		x.p = snap(x.p, marks, 12);
+	}
 }
 
 export function add_clip(s: string, a: number, b: number) {

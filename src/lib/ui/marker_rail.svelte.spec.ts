@@ -1,5 +1,6 @@
 import { render } from 'vitest-browser-svelte';
 import { expect, test } from 'vitest';
+import { tick } from 'svelte';
 import MarkerRail from './marker_rail.svelte';
 import { p, ui, load_proj } from '$lib/project.svelte';
 import type { proj } from '$lib/types';
@@ -75,4 +76,33 @@ test('clicking marker removes it', async () => {
 	const btns = s.baseElement.querySelectorAll('.mk');
 	(btns[0] as HTMLButtonElement).click();
 	expect(p.m.length).toBe(1);
+});
+
+test('visibility toggle hides one group, row stays', async () => {
+	load_proj({
+		...proj_with_markers(),
+		m: [
+			{ p: 10, g: '' },
+			{ p: 20, g: 'kick' }
+		]
+	});
+	ui.zoom = 4;
+	ui.scroll = 0;
+	const s = render(MarkerRail);
+	expect(s.baseElement.querySelectorAll('.mk').length).toBe(2);
+	const label = s.baseElement.querySelector('button[aria-label="toggle kick"]')!;
+	(label as HTMLButtonElement).click();
+	await tick();
+	expect(ui.hid['kick']).toBe(1);
+	expect(s.baseElement.querySelectorAll('.mk').length).toBe(1);
+	expect(s.baseElement.querySelector('button[aria-label="toggle kick"]')).not.toBeNull();
+});
+
+test('markers outside the visible lane range are skipped', async () => {
+	load_proj(proj_with_markers());
+	ui.zoom = 4;
+	ui.scroll = 0;
+	const s = render(MarkerRail, { lane: 80 });
+	expect(s.baseElement.querySelectorAll('.mk').length).toBe(1);
+	expect((s.baseElement.querySelector('.mk') as HTMLElement).style.left).toBe('40px');
 });

@@ -1,10 +1,25 @@
 <script lang="ts">
 	import { p, ui, src_of, place, commit } from '$lib/project.svelte';
 	import { del_src, thumb, bufs, peaks, probe } from '$lib/media';
+	import { transcribe } from '$lib/transcribe';
 	import { conv_fr, tc } from '$lib/time';
-	import type { clip } from '$lib/types';
+	import type { clip, src } from '$lib/types';
 
 	let drag = $state(false);
+	let busy = $state<Record<string, boolean>>({});
+	let err = $state<Record<string, string>>({});
+
+	async function detect(r: src) {
+		busy[r.i] = true;
+		err[r.i] = '';
+		try {
+			await transcribe(r.i);
+		} catch (e) {
+			err[r.i] = e instanceof Error ? e.message : String(e);
+		} finally {
+			busy[r.i] = false;
+		}
+	}
 
 	async function import_file(f: File) {
 		commit();
@@ -98,29 +113,46 @@
 		</div>
 
 		{#each p.r as r (r.i)}
-			<div
-				class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 font-mono text-xs"
-				class:ring-1={ui.src_sel === r.i}
-				class:ring-sel={ui.src_sel === r.i}
-				role="button"
-				tabindex="0"
-				onclick={() => select_src(r.i)}
-				ondblclick={() => make_clip(r.i)}
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') select_src(r.i);
-				}}
-			>
-				<span class="w-6 text-center text-dim">{r.k}</span>
-				<span class="flex-1 truncate">{r.n}</span>
-				<span class="text-dim">{r.k === 'p' ? '' : tc(r.d, r.f)}</span>
-				<button
-					type="button"
-					class="text-dim hover:text-ink"
-					onclick={(e) => {
-						e.stopPropagation();
-						del_src(r.i);
-					}}>×</button
+			<div>
+				<div
+					class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 font-mono text-xs"
+					class:ring-1={ui.src_sel === r.i}
+					class:ring-sel={ui.src_sel === r.i}
+					role="button"
+					tabindex="0"
+					onclick={() => select_src(r.i)}
+					ondblclick={() => make_clip(r.i)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') select_src(r.i);
+					}}
 				>
+					<span class="w-6 text-center text-dim">{r.k}</span>
+					<span class="flex-1 truncate">{r.n}</span>
+					<span class="text-dim">{r.k === 'p' ? '' : tc(r.d, r.f)}</span>
+					{#if bufs.has(r.i)}
+						<button
+							type="button"
+							class="text-dim hover:text-ink"
+							onclick={(e) => {
+								e.stopPropagation();
+								void detect(r);
+							}}>detect</button
+						>
+					{/if}
+					<button
+						type="button"
+						class="text-dim hover:text-ink"
+						onclick={(e) => {
+							e.stopPropagation();
+							del_src(r.i);
+						}}>×</button
+					>
+				</div>
+				{#if busy[r.i]}
+					<div class="mx-2 h-0.5 animate-pulse bg-beat"></div>
+				{:else if err[r.i]}
+					<div class="mx-2 font-mono text-[10px] text-beat">{err[r.i]}</div>
+				{/if}
 			</div>
 		{/each}
 

@@ -223,7 +223,7 @@
 			</div>
 
 			<div class="sticky top-6 z-10 border-b border-line bg-panel">
-				<MarkerRail />
+				<MarkerRail lane={lane_el?.clientWidth ?? 0} />
 			</div>
 
 			{#each p.t as t (t.i)}

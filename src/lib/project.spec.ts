@@ -8,6 +8,7 @@ import {
 	p,
 	place,
 	redo,
+	snap_group,
 	top_at,
 	undo,
 	ui
@@ -127,5 +128,36 @@ describe('project store', () => {
 		p.x.push({ i: 'x1', c: 'c1', t: 'v1', p: 0, l: 10 });
 		const t = top_at(50);
 		expect(t).toBeUndefined();
+	});
+
+	it('snap_group snaps video items to nearby group markers, not audio', () => {
+		load_proj(structuredClone(initial()));
+		p.x.push({ i: 'x1', c: 'c1', t: 'v1', p: 100, l: 20 });
+		p.x.push({ i: 'x2', c: 'c1', t: 'a1', p: 100, l: 20 });
+		add_marker(90, 'kick');
+		add_marker(300, 'kick');
+		snap_group('kick');
+		expect(p.x.find((x) => x.i === 'x1')?.p).toBe(90);
+		expect(p.x.find((x) => x.i === 'x2')?.p).toBe(100);
+	});
+
+	it('snap_group leaves items untouched beyond 12 frames', () => {
+		load_proj(structuredClone(initial()));
+		p.x.push({ i: 'x1', c: 'c1', t: 'v1', p: 100, l: 20 });
+		add_marker(140, 'kick');
+		snap_group('kick');
+		expect(p.x.find((x) => x.i === 'x1')?.p).toBe(100);
+	});
+
+	it('snap_group with no markers is a no-op and undo restores in one step', () => {
+		load_proj(structuredClone(initial()));
+		p.x.push({ i: 'x1', c: 'c1', t: 'v1', p: 100, l: 20 });
+		add_marker(90, 'kick');
+		snap_group('drums');
+		expect(p.x.find((x) => x.i === 'x1')?.p).toBe(100);
+		snap_group('kick');
+		expect(p.x.find((x) => x.i === 'x1')?.p).toBe(90);
+		undo();
+		expect(p.x.find((x) => x.i === 'x1')?.p).toBe(100);
 	});
 });
