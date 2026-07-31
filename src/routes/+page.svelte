@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { from_event, type act } from '$lib/keys.svelte';
-	import { p, ui, commit, undo, redo, add_marker, del_item } from '$lib/project.svelte';
-	import { probe } from '$lib/media';
+	import { p, ui, commit, undo, redo, add_marker, del_item, load_proj } from '$lib/project.svelte';
+	import { probe, clear_media } from '$lib/media';
+	import { save, restore, wipe } from '$lib/persist.svelte';
 	import Settings from '$lib/ui/settings.svelte';
 	import Library from '$lib/ui/library.svelte';
 	import Timeline from '$lib/ui/timeline.svelte';
@@ -12,6 +13,43 @@
 
 	let show_settings = $state(false);
 	let vp = $state<Viewport | undefined>();
+
+	let save_timer: ReturnType<typeof setTimeout>;
+
+	$effect(() => {
+		JSON.stringify(p);
+		clearTimeout(save_timer);
+		save_timer = setTimeout(save, 800);
+	});
+
+	$effect(() => {
+		void restore();
+		return () => clearTimeout(save_timer);
+	});
+
+	function new_proj() {
+		if (!confirm('discard current project?')) return;
+		clear_media();
+		load_proj({
+			f: 30,
+			w: 1920,
+			h: 1080,
+			r: [],
+			c: [],
+			t: [
+				{ i: 'v1', k: 'v', n: 'v1', m: 0, h: 0 },
+				{ i: 'a1', k: 'a', n: 'a1', m: 0, h: 0 }
+			],
+			m: [],
+			x: []
+		});
+		ui.pf = 0;
+		ui.playing = false;
+		ui.mode = 'e';
+		ui.sel = '';
+		ui.src_sel = '';
+		void wipe();
+	}
 
 	async function handle_import(e: Event) {
 		const target = e.currentTarget as HTMLInputElement;
@@ -109,6 +147,9 @@
 		<span class="font-mono text-sm tracking-widest text-beat">sinc</span>
 		<span class="font-mono text-xs text-dim">{p.w}×{p.h} · {p.f}fps</span>
 		<div class="flex-1"></div>
+		<button class="rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim" onclick={new_proj}
+			>new</button
+		>
 		<label
 			class="cursor-pointer rounded bg-panel2 px-2 py-1 font-mono text-xs text-dim hover:text-ink"
 			>import

@@ -125,6 +125,17 @@ export function del_src(sid: string) {
 	}
 }
 
+export function clear_media() {
+	for (const el of els.values()) URL.revokeObjectURL(el.src);
+	for (const b of bmps.values()) b.close();
+	els.clear();
+	bmps.clear();
+	bufs.clear();
+	inputs.clear();
+	sinks.clear();
+	files.clear();
+}
+
 export async function rehydrate(r: src, file: File) {
 	files.set(r.i, file);
 	if (r.k === 'p') return void bmps.set(r.i, await createImageBitmap(file));
