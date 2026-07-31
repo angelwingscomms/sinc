@@ -71,10 +71,12 @@ export async function thumb(sid: string, f: number, fps: number) {
 	if (bmp) return bmp;
 	const smp = await frame_at(sid, f, fps);
 	if (!smp || !('toVideoFrame' in smp)) return null;
-	const out = await createImageBitmap(smp.toVideoFrame(), {
+	const vf = smp.toVideoFrame();
+	const out = await createImageBitmap(vf, {
 		resizeWidth: 160,
 		resizeQuality: 'low'
 	});
+	vf.close();
 	smp.close();
 	bmps.set(key, out);
 	return out;

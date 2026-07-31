@@ -1,0 +1,26 @@
+$ vite dev
+11:00:05 AM [vite] (ssr) connected.
+11:00:05 AM [vite] (client) Forced re-optimization of dependencies
+
+  VITE v8.1.5  ready in 3308 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+[200] GET /
+[200] GET /
+[404] GET /favicon.ico
+11:03:58 AM [vite] (client) hmr update /src/lib/ui/clip_maker.svelte, /src/routes/layout.css
+11:04:02 AM [vite] (client) hmr update /src/lib/ui/clip_maker.svelte, /src/routes/layout.css
+11:04:07 AM [vite] (client) hmr update /src/routes/layout.css, /src/routes/+page.svelte, /src/lib/ui/library.svelte, /src/lib/ui/timeline.svelte, /src/lib/ui/viewport.svelte, /src/lib/ui/clip_maker.svelte, /src/lib/ui/render_bar.svelte
+11:04:15 AM [vite] (client) page reload .svelte-kit/generated/client/nodes/0.js
+11:04:15 AM [vite] (client) page reload .svelte-kit/generated/client/nodes/2.js
+11:04:15 AM [vite] (client) page reload .svelte-kit/generated/client/nodes/1.js
+11:04:15 AM [vite] (client) page reload .svelte-kit/generated/client/app.js
+11:04:15 AM [vite] (client) page reload .svelte-kit/generated/client/matchers.js
+11:04:15 AM [vite] (ssr) page reload .svelte-kit/generated/shared/error-template.js
+11:04:15 AM [vite] (ssr) program reload
+11:04:15 AM [vite] (ssr) page reload .svelte-kit/generated/server/internal.js
+11:04:15 AM [vite] (ssr) program reload
+[304] GET /
+[304] GET /

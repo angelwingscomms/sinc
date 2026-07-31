@@ -68,7 +68,9 @@
 			if (mine !== token) return void smp?.close?.();
 			if (smp && 'toVideoFrame' in smp) {
 				if (big && big !== bmps.get(r.i)) big.close();
-				big = await createImageBitmap(smp.toVideoFrame());
+				const vf = smp.toVideoFrame();
+				big = await createImageBitmap(vf);
+				vf.close();
 				smp.close();
 			}
 		})();
@@ -90,10 +92,12 @@
 				results.push(null);
 				continue;
 			}
-			const bmp = await createImageBitmap(smp.toVideoFrame(), {
+			const vf = smp.toVideoFrame();
+			const bmp = await createImageBitmap(vf, {
 				resizeWidth: 96,
 				resizeQuality: 'low'
 			});
+			vf.close();
 			smp.close();
 			results.push(bmp);
 		}
